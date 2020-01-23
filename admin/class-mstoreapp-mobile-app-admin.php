@@ -177,7 +177,7 @@ class Mstoreapp_Mobile_App_Admin {
             // License data.
             $license_data = json_decode(wp_remote_retrieve_body($response));
 
-            // TODO - Do something with it.
+            // TODO - Do something with it. license_data
             //var_dump($license_data);//uncomment it to look at the data
             
             if($license_data->result == 'success'){//Success was returned for the license activation
@@ -819,6 +819,7 @@ class Mstoreapp_Mobile_App_Admin {
       return $args;
     }
 
+    //TODO: upload picture
     public function uploadimage() {
 
           if ( ! function_exists( 'wp_handle_upload' ) ) {

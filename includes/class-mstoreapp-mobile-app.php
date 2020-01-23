@@ -215,6 +215,9 @@ class Mstoreapp_Mobile_App {
         $this->loader->add_action('wp_ajax_mstoreapp-login', $plugin_public, 'login');
         $this->loader->add_action('wp_ajax_nopriv_mstoreapp-login', $plugin_public, 'login');
 
+        $this->loader->add_action('wp_ajax_mstoreapp-fcm', $plugin_public, 'fcm');
+        $this->loader->add_action('wp_ajax_nopriv_mstoreapp-fcm', $plugin_public, 'fcm');
+
         $this->loader->add_action('wp_ajax_mstoreapp-cart', $plugin_public, 'cart');
         $this->loader->add_action('wp_ajax_nopriv_mstoreapp-cart', $plugin_public, 'cart');
 
