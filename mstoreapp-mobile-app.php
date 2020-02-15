@@ -17,7 +17,7 @@
  * Plugin Name:       Mstoreapp Mobile Multivendor
  * Plugin URI:        http://mstoreapp.com
  * Description:       Connects Mstoreapp Marketplace Mobile App with api.
- * Version:           9.0.1
+ * Version:           2020.9.0.1
  * Author:            Mstoreapp
  * Author URI:        http://mstoreapp.com
  * License:           GPL-2.0+

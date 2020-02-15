@@ -68,54 +68,59 @@ class Mstoreapp_Mobile_App_Public
         $query = "SELECT max(cast(meta_value as unsigned)) FROM $table_name WHERE meta_key='_price'";
         $max_price = $wpdb->get_var($query);
 
-        $currency = get_woocommerce_currency();
-
+        $currency = " تومان ";
+        //get_woocommerce_currency();
         $data = array();
 
         $options = get_option('mstoreapp_options');
 
         $data['blocks'] = array();
         $id = 0;
-        for ($i = 0; $i < 100; $i++) {
-            if (isset($options['switch_' . $i]) && $options['switch_' . $i] == 1) {
 
-                $filter_by = isset($options['filter_by_' . $i]) ? $options['filter_by_' . $i] : 'category';
-                $link_id = isset($options['link_id_' . $i]) ? $options['link_id_' . $i] : 0;
-                $sale_ends = isset($options['sale_ends_' . $i]) ? $options['sale_ends_' . $i] : 0;
-                $slides = isset($options['slides_' . $i]) ? $options['slides_' . $i] : array();
+        $data['blocks'] = $this->selectBlocks();
 
-                if ($options['block_type_' . $i] === 'product_block' || $options['block_type_' . $i] === 'flash_sale_block') {
-                    $products = $this->get_products($filter_by, $link_id);
-                } else $products = array();
+        // for ($i = 0; $i < 100; $i++) {
+        //     if (isset($options['switch_' . $i]) && $options['switch_' . $i] == 1) {
 
-                $data['blocks'][] = array(
-                    'id' => $id,
-                    'children' => $slides,
-                    'products' => $products,
-                    'title' => $options['title_' . $i],
-                    'header_align' => $options['header_align_' . $i],
-                    'title_color' => $options['title_color_' . $i],
-                    'style' => $options['style_' . $i],
-                    'banner_shadow' => $options['shadow_' . $i],
-                    'padding' => $options['padding_' . $i]['padding-top'] . ' ' . $options['padding_' . $i]['padding-right'] . ' ' . $options['padding_' . $i]['padding-bottom'] . ' ' . $options['padding_' . $i]['padding-left'],
-                    'margin' => $options['margin_' . $i]['margin-top'] . ' ' . $options['margin_' . $i]['margin-right'] . ' ' . $options['margin_' . $i]['margin-bottom'] . ' ' . $options['margin_' . $i]['margin-left'],
-                    'bg_color' => $options['background_color_' . $i],
-                    'sort' => $options['sort_' . $i],
-                    'block_type' => $options['block_type_' . $i],
-                    'filter_by' => $filter_by,
-                    'link_id' => $link_id,
-                    'border_radius' => $options['border_radius_' . $i]['width'],
-                    'margin_between' => $options['margin_between_' . $i]['width'],
-                    'child_width' => $options['child_width_' . $i],
-                    'sale_ends' => $sale_ends . ' 23:59'
-                );
-                $id = $id + 1;
-            }
-        }
+        //         $filter_by = isset($options['filter_by_' . $i]) ? $options['filter_by_' . $i] : 'category';
+        //         $link_id = isset($options['link_id_' . $i]) ? $options['link_id_' . $i] : 0;
+        //         $sale_ends = isset($options['sale_ends_' . $i]) ? $options['sale_ends_' . $i] : 0;
+        //         $slides = isset($options['slides_' . $i]) ? $options['slides_' . $i] : array();
 
-        usort($data['blocks'], function ($a, $b) {
-            return $a['sort'] - $b['sort'];
-        });
+        if ($options['block_type_' . $i] === 'product_block' || $options['block_type_' . $i] === 'flash_sale_block') {
+            $products = $this->get_products($filter_by, $link_id);
+        } else $products = array();
+
+        //         
+
+        //         // $data['blocks'][] = array(
+        //         //     'id' => $id,
+        //         //     'children' => $slides,
+        //         //     'products' => $products,
+        //         //     'title' => $options['title_' . $i],
+        //         //     'header_align' => $options['header_align_' . $i],
+        //         //     'title_color' => $options['title_color_' . $i],
+        //         //     'style' => $options['style_' . $i],
+        //         //     'banner_shadow' => $options['shadow_' . $i],
+        //         //     'padding' => $options['padding_' . $i]['padding-top'] . ' ' . $options['padding_' . $i]['padding-right'] . ' ' . $options['padding_' . $i]['padding-bottom'] . ' ' . $options['padding_' . $i]['padding-left'],
+        //         //     'margin' => $options['margin_' . $i]['margin-top'] . ' ' . $options['margin_' . $i]['margin-right'] . ' ' . $options['margin_' . $i]['margin-bottom'] . ' ' . $options['margin_' . $i]['margin-left'],
+        //         //     'bg_color' => $options['background_color_' . $i],
+        //         //     'sort' => $options['sort_' . $i],
+        //         //     'block_type' => $options['block_type_' . $i],
+        //         //     'filter_by' => $filter_by,
+        //         //     'link_id' => $link_id,
+        //         //     'border_radius' => $options['border_radius_' . $i]['width'],
+        //         //     'margin_between' => $options['margin_between_' . $i]['width'],
+        //         //     'child_width' => $options['child_width_' . $i],
+        //         //     'sale_ends' => $sale_ends . ' 23:59'
+        //         // );
+        //         $id = $id + 1;
+        //     }
+        // }
+
+        // usort($data['blocks'], function ($a, $b) {
+        //     return $a['sort'] - $b['sort'];
+        // });
 
         $data['pages'] = (array) $options['pages'];
 
@@ -217,6 +222,137 @@ class Mstoreapp_Mobile_App_Public
         wp_send_json($data);
 
         die();
+    }
+
+
+    public function blocks()
+    {
+        $data = $this->selectBlocks();
+
+        $result['blocks'] = $data;
+        //$result['css style'] = $wpdb->get_results ( "SELECT css_style_1 FROM  $table_name WHERE parent_id =0" );
+        $options = get_option('mstore_settings');
+        //unset($options['consumer_key']);
+        //unset($options['consumer_secret']);
+        unset($options['key']);
+        $result['settings'] = $options;
+
+        return $result;
+    }
+
+    public function selectBlocks()
+    {
+        global $woocommerce;
+        $data = array();
+
+        global $wpdb;
+        $table_name = $wpdb->prefix . "mstoreapp_blocks";
+
+        $query =
+
+            "SELECT
+            id,
+            name,
+            parent_id,
+            block_type,
+            image_url,
+            link_id,
+            link_type,
+            tag,
+            sort_order,
+            status,
+            concat(margin_top,margin_top_dimension,' ',margin_right,margin_right_dimension,' ',margin_bottom,margin_bottom_dimension,' ',margin_left,margin_left_dimension) as margin,
+            concat(padding_top,padding_top_dimension,' ',padding_right,padding_right_dimension,' ',padding_bottom,padding_bottom_dimension,' ',padding_left,padding_left_dimension) as padding,
+            bg_color,
+            concat(border_radius,border_radius_dimension)as border_radius,
+            layout,
+            layout_grid_col,
+            shape,
+            header_align,
+            text_color,
+            card_style,
+            end_time
+        
+        FROM $table_name WHERE parent_id = 0 and status = 'true'";
+
+        $data = $wpdb->get_results($query);
+
+
+
+        foreach ($data as $key => $value) {
+
+            //$query = "SELECT * FROM $table_name WHERE parent_id ='".$key['id']."'";
+
+            $query = $wpdb->prepare(
+
+                "SELECT 
+
+                id,
+                name,
+                parent_id,
+                block_type,
+                image_url,
+                link_id,
+                link_type,
+                tag,
+                sort_order,
+                status,
+                concat(margin_top,margin_top_dimension,' ',margin_right,margin_right_dimension,' ',margin_bottom,margin_bottom_dimension,' ',margin_left,margin_left_dimension) as margin,
+                concat(padding_top,padding_top_dimension,' ',padding_right,padding_right_dimension,' ',padding_bottom,padding_bottom_dimension,' ',padding_left,padding_left_dimension) as padding,
+                bg_color,
+                concat(border_radius,border_radius_dimension)as border_radius,
+                layout,
+                layout_grid_col,
+                shape,
+                header_align,
+                card_style,
+                text_color,
+                end_time
+
+            FROM $table_name WHERE parent_id = %d and status = 'true' ORDER BY sort_order",
+                $value->id
+            );
+
+
+            $data[$key]->children = $wpdb->get_results($query);
+
+
+            foreach ($data[$key]->children as $k => $v) {
+
+                $query = $wpdb->prepare(
+
+                    "SELECT 
+                        id,
+                        name,
+                        parent_id,
+                        block_type,
+                        image_url,
+                        link_id,
+                        link_type,
+                        tag,
+                        sort_order,
+                        status,
+                        concat(margin_top,margin_top_dimension,' ',margin_right,margin_right_dimension,' ',margin_bottom,margin_bottom_dimension,' ',margin_left,margin_left_dimension) as margin,
+                        concat(padding_top,padding_top_dimension,' ',padding_right,padding_right_dimension,' ',padding_bottom,padding_bottom_dimension,' ',padding_left,padding_left_dimension) as padding,
+                        bg_color,
+                        concat(border_radius,border_radius_dimension)as border_radius,
+                        layout,
+                        layout_grid_col,
+                        shape,
+                        header_align,
+                        text_color,
+                        card_style,
+                        end_time
+    
+                    FROM $table_name WHERE parent_id = %d and status = 'true' ORDER BY sort_order",
+                    $v->id
+                );
+
+                $data[$key]->children[$k]->children = $wpdb->get_results($query);
+            }
+        }
+
+        return $data;
     }
 
     public function product_attributes()
@@ -2057,8 +2193,12 @@ class Mstoreapp_Mobile_App_Public
 
         curl_close($curl);
         //echo $response;
+        if ($response['success'] >= 0)
+            $res = array(
+                "success" => 1
+            );
 
-        wp_send_json($response);
+        wp_send_json($res);
     }
 
     public function userdata()
